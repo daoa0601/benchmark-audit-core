@@ -7,7 +7,7 @@ file references; streaming SHA-256 helpers; and detached seals for flat artifact
 
 It deliberately does not provide object storage, telemetry collection, benchmark execution, or a
 domain-specific promotion workflow; those belong to the projects that use it. See
-[the catalog README](../../README.md#cross-repo-boundaries) for how sibling checkouts depend on it.
+[the catalog README](https://github.com/daoa0601/agentic-orch/blob/main/README.md#cross-repo-boundaries) for how sibling checkouts depend on it.
 
 ## Install and verify
 
