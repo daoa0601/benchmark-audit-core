@@ -1,15 +1,13 @@
 # Benchmark Audit Core
 
-`benchmark-audit-core` is the portable evidence and decision layer shared by benchmark runners and
-trace platforms in this workspace. It provides strict, versioned Pydantic contracts for autonomous
+`benchmark-audit-core` is the portable evidence and decision layer for benchmark runners and trace
+platforms. It provides strict, versioned Pydantic contracts for autonomous
 benchmark sessions; a deterministic headline-publication gate and report renderer; content-addressed
 file references; streaming SHA-256 helpers; and detached seals for flat artifact directories.
 
 It deliberately does not provide object storage, telemetry collection, benchmark execution, or a
-domain-specific promotion workflow. AgentTrace owns immutable bundle persistence. Probe owns its
-Apple-Silicon inference correctness, environment, replication, and reviewer rules.
-
-> Status: `0.1.0` is a local release candidate and has not been published to a Python package index.
+domain-specific promotion workflow; those belong to the projects that use it. See
+[the catalog README](../../README.md#cross-repo-boundaries) for how sibling checkouts depend on it.
 
 ## Install and verify
 
@@ -17,15 +15,6 @@ Apple-Silicon inference correctness, environment, replication, and reviewer rule
 uv sync --all-extras
 make check
 ```
-
-`make check` also rebuilds the wheel and source archive. Both distributions include the MIT license
-and the PEP 561 `py.typed` marker so their contents cannot silently lag behind the checked source.
-
-Sibling repositories use a normal `benchmark-audit-core>=0.1,<0.2` dependency and a local
-`[tool.uv.sources]` override while the package is developed in this multi-repository checkout. That
-override is not a standalone release mechanism: publish the core first, remove the override from
-each consumer, regenerate its `uv.lock` from the selected registry, and verify a frozen install in a
-checkout that does not contain `../benchmark-audit-core`.
 
 ## Audit a session
 
@@ -81,15 +70,12 @@ consumer concern.
   concurrency/access controls, and any verify-then-use race protection; verify as close as possible
   to the actual read.
 
-## Compatibility policy
+## Schema policy
 
-- Audit schema `1.0.0` preserves its canonical JSON, check identifiers, and report shape throughout
-  the `0.1.x` package series. The distribution remains pre-stable; any intentional schema
-  or gate-semantic change must introduce a new audit schema version and migration notes.
-- Consumers may add stricter policy gates after the core gate; they must not reinterpret a blocked
-  core result as eligible.
-- `AuditPolicy` intentionally requires manual review by a human or hybrid auditor. Agent-only
-  protocols such as Probe's current independent review use the shared integrity primitives but
-  retain a separate domain-specific promotion decision with additional Probe checks until a
-  versioned policy profile is designed; they do not treat `evaluate_headline_gate()` as their
-  promotion verdict.
+- Audit schema `1.0.0` fixes its canonical JSON, check identifiers, and report shape. Any intentional
+  schema or gate-semantic change must introduce a new audit schema version and migration notes.
+- Callers may add stricter policy gates after the core gate; they must not reinterpret a blocked core
+  result as eligible.
+- `AuditPolicy` intentionally requires manual review by a human or hybrid auditor. An agent-only review
+  protocol can use the integrity primitives, but it needs its own promotion decision rather than
+  treating `evaluate_headline_gate()` as its verdict.
